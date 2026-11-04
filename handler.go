@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"sync"
 )
 
 type Task struct {
@@ -14,6 +15,7 @@ type Task struct {
 }
 
 var tasks []Task
+var mu sync.Mutex
 
 var NextIDD = 1
 
@@ -30,6 +32,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 func TaskHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
+		mu.Lock()
+		defer mu.Unlock()
 
 		var task Task
 		err := json.NewDecoder(r.Body).Decode(&task)

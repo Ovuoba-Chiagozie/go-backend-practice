@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
+	"sync"
+	"time"
 )
 
 func calculateAge(birthYear int) int {
@@ -14,28 +17,78 @@ func isAdult(age int) bool {
 	return age >= 18
 }
 func main() {
-	name := "Chiagozie"
-	birthYear := 2009
-	isActive := true
+	// name := "Chiagozie"
+	// birthYear := 2009
+	// isActive := true
 
-	age := calculateAge(birthYear)
-	isAdult := isAdult(age)
+	// age := calculateAge(birthYear)
+	// isAdult := isAdult(age)
 
-	fmt.Println("Name:", name)
-	fmt.Println("Age:", age)
-	fmt.Println("Active:", isActive)
-	fmt.Println("Is an adult:", isAdult)
+	// fmt.Println("Name:", name)
+	// fmt.Println("Age:", age)
+	// fmt.Println("Active:", isActive)
+	// fmt.Println("Is an adult:", isAdult)
 
-	array := make([]int, 2, 5)
+	// array := make([]int, 2, 5)
 
-	array[0] = 4
-	nonpointer := append(array, 2, 4, 5, 6, 9, 90)
-	fmt.Println(nonpointer, array)
+	// array[0] = 4
+	// nonpointer := append(array, 2, 4, 5, 6, 9, 90)
+	// fmt.Println(nonpointer, array)
 
 	// main2()
 	// main3()
 	// main4()
-	main5()
+	// main5()
+
+	// var wg sync.WaitGroup
+
+	// wg.Add(2)
+
+	// go func() {
+	// 	defer wg.Done()
+	// 	printLetters()
+	// }()
+
+	// go func() {
+	// 	defer wg.Done()
+	// 	printNumbers()
+	// }()
+
+	// wg.Wait()
+
+	// fmt.Println("It is Finished")
+
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+
+	// ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), 2 * time.Second)
+
+	go func() {
+		defer wg.Done()
+		doWork(ctx)
+	}()
+
+	// time.Sleep(2 * time.Second)
+	cancel()
+	wg.Wait()
+	fmt.Println("Main function finished")
+}
+
+func doWork(ctx context.Context) {
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			fmt.Println("Cancelled")
+			return
+		case <-ticker.C:
+			fmt.Println("Processing task..")
+		}
+	}
 }
 
 func main2() {
@@ -198,4 +251,19 @@ func main5() {
 
 	fmt.Println("Server running bitch")
 
+}
+
+func printNumbers() {
+	for i := 1; i < 6; i++ {
+		fmt.Println(i)
+	}
+}
+
+func printLetters() {
+	letters := []string{"A", "B", "C", "D", "E"}
+
+	for _, letter := range letters {
+
+		fmt.Println(letter)
+	}
 }
