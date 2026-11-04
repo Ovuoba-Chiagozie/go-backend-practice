@@ -1,42 +1,46 @@
 package main
 
-import "fmt"
-import "errors"
+import (
+	"errors"
+	"fmt"
+	"net/http"
+)
 
 func calculateAge(birthYear int) int {
-    return 2026 - birthYear
+	return 2026 - birthYear
 }
 
 func isAdult(age int) bool {
 	return age >= 18
 }
 func main() {
-    name := "Chiagozie"
-    birthYear := 2009
-    isActive := true
+	name := "Chiagozie"
+	birthYear := 2009
+	isActive := true
 
-    age := calculateAge(birthYear)
+	age := calculateAge(birthYear)
 	isAdult := isAdult(age)
 
-    fmt.Println("Name:", name)
-    fmt.Println("Age:", age)
-    fmt.Println("Active:", isActive)
-	fmt.Println("Is an adult:",isAdult)
+	fmt.Println("Name:", name)
+	fmt.Println("Age:", age)
+	fmt.Println("Active:", isActive)
+	fmt.Println("Is an adult:", isAdult)
 
-	array := make([]int,2, 5)
+	array := make([]int, 2, 5)
 
 	array[0] = 4
-	nonpointer := append(array,2,4,5,6,9,90) 
-	fmt.Println(nonpointer,array)
+	nonpointer := append(array, 2, 4, 5, 6, 9, 90)
+	fmt.Println(nonpointer, array)
 
-	main2()
-	main3()
-	main4()
+	// main2()
+	// main3()
+	// main4()
+	main5()
 }
 
 func main2() {
 
-    users := make(map[string]string)
+	users := make(map[string]string)
 
 	users["John"] = "admin"
 	users["Mary"] = "editor"
@@ -44,7 +48,7 @@ func main2() {
 
 	users["Mary"] = "admin"
 
-	value,exists := users["Peter"]
+	value, exists := users["Peter"]
 
 	if exists {
 		fmt.Println(value)
@@ -52,23 +56,23 @@ func main2() {
 		fmt.Println("U know u dont have sense this guy")
 	}
 
-	delete(users,"John")
+	delete(users, "John")
 
-	for key,value := range(users) {
-		fmt.Println(key,value)
+	for key, value := range users {
+		fmt.Println(key, value)
 	}
-    // Add these users:
-    // John -> admin
-    // Mary -> editor
-    // Peter -> user
+	// Add these users:
+	// John -> admin
+	// Mary -> editor
+	// Peter -> user
 
-    // Update Mary's role to admin
+	// Update Mary's role to admin
 
-    // Check if Peter exists and print his role
+	// Check if Peter exists and print his role
 
-    // Delete John
+	// Delete John
 
-    // Loop through the remaining users and print their names and roles
+	// Loop through the remaining users and print their names and roles
 }
 
 func main3() {
@@ -76,12 +80,12 @@ func main3() {
 	account := BankAccount{
 		AccountHolder: "Chiagozie",
 		AccountNumber: "123456789",
-		Balance: 9000000.99,
+		Balance:       9000000.99,
 	}
 
 	amount := 6700.00
 	account.Deposit(&amount)
- 	err := account.Withdraw(amount)
+	err := account.Withdraw(amount)
 
 	if errors.Is(err, ErrInsuffienctFunds) {
 		fmt.Println(err)
@@ -89,17 +93,17 @@ func main3() {
 
 	fmt.Println("The current balance is", account.getBalance())
 	fmt.Println("It has sufficent balance for this amount", account.HasSufficentFunds(amount))
-	fmt.Println("Current amount",amount)
-	
+	fmt.Println("Current amount", amount)
+
 }
 
 type BankAccount struct {
-	AccountHolder  string
+	AccountHolder string
 	AccountNumber string
-	Balance float64
+	Balance       float64
 }
 
-func (b *BankAccount) Deposit(amount *float64)float64 {
+func (b *BankAccount) Deposit(amount *float64) float64 {
 	b.Balance = b.Balance + *amount
 	return b.Balance
 }
@@ -119,12 +123,12 @@ func (b *BankAccount) Withdraw(amount float64) error {
 	return ErrInsuffienctFunds
 }
 
-func (b BankAccount) getBalance()float64 {
+func (b BankAccount) getBalance() float64 {
 	return b.Balance
 }
 
-func (b BankAccount) HasSufficentFunds(amount float64)bool {
-   return b.Balance >= amount 
+func (b BankAccount) HasSufficentFunds(amount float64) bool {
+	return b.Balance >= amount
 }
 
 type NotificationSender interface {
@@ -137,20 +141,19 @@ type EmailSender struct {
 func (e EmailSender) Send(message string) error {
 	if message == "" {
 		return errors.New("Message cannot be empty")
-	} 
+	}
 	fmt.Println("This message:", message, "was sent")
 	return nil
 }
 
 type SmsSender struct {
-
 }
 
 func (s SmsSender) Send(message string) error {
 	if message == "" {
 		return errors.New("Message cannot be empty")
-	} 
-	fmt.Println("This message:", message,"was fing sent")
+	}
+	fmt.Println("This message:", message, "was fing sent")
 	return nil
 }
 
@@ -167,19 +170,32 @@ func main4() {
 	sms := SmsSender{}
 	email := EmailSender{}
 
-
 	sendNotification(sms)
 	sendNotification(email)
 
 }
 
-func ProcessPayment (amount int) {
+func ProcessPayment(amount int) {
 	defer fmt.Println("Payment processing finished")
 	fmt.Println("Processing payment...")
 
 	if amount <= 0 {
 		panic("So u no get shii guy")
-	} 
+	}
 
 	fmt.Println("Payment fucking SUccessful")
+}
+
+func main5() {
+
+	http.HandleFunc("/", HomeHandler)
+	http.HandleFunc("/tasks", TaskHandler)
+	http.HandleFunc("GET /tasks/{id}", getTaskHandler)
+	http.HandleFunc("PUT /tasks/{id}", updateTaskHandler)
+	http.HandleFunc("DELETE /tasks/{id}", deleteTaskHandler)
+
+	http.ListenAndServe(":8080", nil)
+
+	fmt.Println("Server running bitch")
+
 }
