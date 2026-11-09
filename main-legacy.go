@@ -16,7 +16,7 @@ func calculateAge(birthYear int) int {
 func isAdult(age int) bool {
 	return age >= 18
 }
-func main() {
+func main1() {
 	// name := "Chiagozie"
 	// birthYear := 2009
 	// isActive := true
